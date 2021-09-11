@@ -62,6 +62,5 @@ def logistics(transport_request: str, transport_types: dict = None):
     transport.deliver()
 
 
-logistics('ship')
-logistics('train')
-logistics('truck')
+if __name__ == '__main__':
+    for request in 'truck', 'ship', 'train': logistics(request)

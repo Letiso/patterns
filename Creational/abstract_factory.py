@@ -38,9 +38,9 @@ class StopButtonLinux(StopButton):
 
 class ButtonsFactory(ABC):
     @abstractmethod
-    def create_start_button(self): pass
+    def create_start_button(self) -> StartButton: pass
 
-    def create_stop_button(self): pass
+    def create_stop_button(self) -> StopButton: pass
 
 
 class WindowsButtonsFactory(ButtonsFactory):
@@ -60,19 +60,22 @@ class LinuxButtonsFactory(ButtonsFactory):
 
 
 def buttons_factory_dict(func):
-    # current_os = platform()[:platform().index('-')]
-    current_os = 'Linux'
+    current_os = platform()[:platform().index('-')]
+    # current_os = 'Linux'
 
-    os_factories = dict(
+    buttons_factory = dict(
         [(buttons_factory.__name__[:buttons_factory.__name__.index('Buttons')], buttons_factory)
          for buttons_factory in ButtonsFactory.__subclasses__()]
     )
-    print(os_factories, end='\n\n')
+    print(f'Current available factories:\n'
+          f'{buttons_factory}', end='\n\n')
 
     def wrapper():
-        return func(factory := os_factories[current_os]())
+        return func(buttons_factory[current_os]())
 
     return wrapper
+
+# Client
 
 
 @buttons_factory_dict

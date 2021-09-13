@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+# Products
+
 
 class Transport(ABC):
     @abstractmethod
@@ -20,10 +22,12 @@ class Train(Transport):
     def deliver(self):
         print(f'Goods were delivered by {self.__class__.__name__}.', end='\n\n')
 
+# Factories
+
 
 class TransportFactory(ABC):
     @abstractmethod
-    def create_transport(self): pass
+    def create_transport(self) -> Transport: pass
 
 
 class TruckFactory(TransportFactory):
@@ -40,16 +44,19 @@ class TrainFactory(TransportFactory):
     def create_transport(self) -> Train:
         return Train()
 
+# Client
+
 
 def transport_factory_dict(func):
     transport_factories = dict(
         [(transport_factory.__name__[:transport_factory.__name__.index('Factory')], transport_factory)
          for transport_factory in TransportFactory.__subclasses__()]
     )
-    print(transport_factories, end='\n\n')
+    print(f'Current available factories:\n'
+          f'{transport_factories}', end='\n\n')
 
     def wrapper(transport_request: str):
-        return func(factory := transport_factories[transport_request.title()]())
+        return func(transport_factories[transport_request.title()]())
 
     return wrapper
 

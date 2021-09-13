@@ -8,17 +8,17 @@ class Transport(ABC):
 
 class Truck(Transport):
     def deliver(self):
-        print(f'Goods were delivered by {self.__class__.__name__}\n')
+        print(f'Goods were delivered by {self.__class__.__name__}.', end='\n\n')
 
 
 class Ship(Transport):
     def deliver(self):
-        print(f'Goods were delivered by {self.__class__.__name__}\n')
+        print(f'Goods were delivered by {self.__class__.__name__}.', end='\n\n')
 
 
 class Train(Transport):
     def deliver(self):
-        print(f'Goods were delivered by {self.__class__.__name__}\n')
+        print(f'Goods were delivered by {self.__class__.__name__}.', end='\n\n')
 
 
 class TransportFactory(ABC):
@@ -41,24 +41,23 @@ class TrainFactory(TransportFactory):
         return Train()
 
 
-def transport_factory_types_dict(func):
-    transport_types = dict(
-        [(transport.__name__[:transport.__name__.index('Factory')], transport)
-         for transport in TransportFactory.__subclasses__()]
+def transport_factory_dict(func):
+    transport_factories = dict(
+        [(transport_factory.__name__[:transport_factory.__name__.index('Factory')], transport_factory)
+         for transport_factory in TransportFactory.__subclasses__()]
     )
-    print(transport_types, end='\n\n')
+    print(transport_factories, end='\n\n')
 
     def wrapper(transport_request: str):
-        return func(transport_request, transport_types)
+        return func(factory := transport_factories[transport_request.title()]())
 
     return wrapper
 
 
-@transport_factory_types_dict
-def logistics(transport_request: str, transport_types: dict = None):
-    transport_request = transport_request.title()
-    print(f'Order was accepted by {transport_types[transport_request].__name__}')
-    transport = transport_types[transport_request]().create_transport()
+@transport_factory_dict
+def logistics(factory: TransportFactory):
+    print(f'Order was accepted by {factory.__class__.__name__}')
+    transport = factory.create_transport()
     transport.deliver()
 
 

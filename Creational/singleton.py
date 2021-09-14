@@ -15,10 +15,10 @@ class DataBase:
         self.conn = connect(':memory:')
         self.cursor = self.conn.cursor()
         self.cursor.execute("""
-CREATE TABLE IF NOT EXISTS users(
-user_id         INT PRIMARY KEY,
-first_name      TEXT,
-last_name       TEXT);
+            CREATE TABLE IF NOT EXISTS users(
+            user_id         INT PRIMARY KEY,
+            first_name      TEXT,
+            last_name       TEXT);
         """)
         self.conn.commit()
 
@@ -30,12 +30,12 @@ last_name       TEXT);
 
     def get_all_users(self):
         self.cursor.execute("SELECT * FROM users;")
-        print('Data base contains users:', end=f"\n{'_' * 50}\n")
+        print('Data base contains such users as:', end=f"\n{'_' * 50}\n")
 
         for user in self.cursor.fetchall():
             user_id, first_name, last_name = user
             print(f'User id: {user_id}\n'
-                  f'Full name is {first_name} {last_name}', end=f"\n{'_' * 50}\n")
+                  f'Full name: {first_name} {last_name}', end=f"\n{'_' * 50}\n")
 
 
 if __name__ == '__main__':

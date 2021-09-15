@@ -2,10 +2,10 @@ from sqlite3 import connect
 
 
 def singleton(cls):
-    data_base = cls()
+    instance = cls()
 
     def wrapper():
-        return data_base
+        return instance
     return wrapper
 
 
@@ -22,7 +22,7 @@ class DataBase:
         """)
         self.conn.commit()
 
-    def add_user(self, user):
+    def add_user(self, user: tuple):
         self.cursor.execute("""
             INSERT INTO users VALUES(?, ?, ?);
             """, user)

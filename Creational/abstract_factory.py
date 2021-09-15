@@ -40,6 +40,7 @@ class ButtonsFactory(ABC):
     @abstractmethod
     def create_start_button(self) -> StartButton: pass
 
+    @abstractmethod
     def create_stop_button(self) -> StopButton: pass
 
 
@@ -63,10 +64,10 @@ def buttons_factory_dict(func):
     current_os = platform()[:platform().index('-')]
     # current_os = 'Linux'
 
-    buttons_factory = dict(
-        [(buttons_factory.__name__[:buttons_factory.__name__.index('Buttons')], buttons_factory)
-         for buttons_factory in ButtonsFactory.__subclasses__()]
-    )
+    buttons_factory = {
+        buttons_factory.__name__[:buttons_factory.__name__.index('Buttons')]: buttons_factory
+        for buttons_factory in ButtonsFactory.__subclasses__()
+    }
     print(f'Current available factories:\n'
           f'{buttons_factory}', end='\n\n')
 

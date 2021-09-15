@@ -48,10 +48,10 @@ class TrainFactory(TransportFactory):
 
 
 def transport_factory_dict(func):
-    transport_factories = dict(
-        [(transport_factory.__name__[:transport_factory.__name__.index('Factory')], transport_factory)
-         for transport_factory in TransportFactory.__subclasses__()]
-    )
+    transport_factories = {
+        transport_factory.__name__[:transport_factory.__name__.index('Factory')]: transport_factory
+        for transport_factory in TransportFactory.__subclasses__()
+    }
     print(f'Current available factories:\n'
           f'{transport_factories}', end='\n\n')
 

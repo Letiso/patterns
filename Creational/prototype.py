@@ -115,12 +115,12 @@ class NPC(NPCPrototype, NPCConfig):
                f"Stats: \n{self._stats}\n" \
                f"{'*' * 100}\n"
 
-    def _equip_armor(self, armor):
+    def _equip_armor(self, armor: str):
         self._inventory['armor'] = armor
         for stat in NPCConfig._armor_types_dict[armor]:
             self._stats[stat] += NPCConfig._armor_types_dict[armor][stat]
 
-    def _equip_weapon(self, weapon):
+    def _equip_weapon(self, weapon: str):
         self._inventory['weapon'] = weapon
         for stat in NPCConfig._weapon_types_dict[self.__class__.__name__.lower()][weapon]:
             self._stats[stat] += NPCConfig._weapon_types_dict[self.__class__.__name__.lower()][weapon][stat]
@@ -182,10 +182,10 @@ class NPCFactory:
         self._base_warrior = Warrior()
         self._base_mage = Mage()
 
-    def get_random_warrior(self):
+    def get_random_warrior(self) -> Warrior:
         return self._base_warrior.clone()
 
-    def get_random_mage(self):
+    def get_random_mage(self) -> Mage:
         return self._base_mage.clone()
     # TODO make more npc templates
 

@@ -1,12 +1,44 @@
 from abc import ABC, abstractmethod
-from copy import copy, deepcopy
+import copy
 
 
-class Prototype(ABC):
+class NPCPrototype(ABC):
+    _name = _race = _stats = _items_limit = _inventory = None
+
     @abstractmethod
-    def __copy__(self): pass
-
-    @abstractmethod
-    def __deepcopy__(self): pass
+    def clone(self): pass
 
 
+class Warrior:
+    def __init__(self):
+        pass
+
+    def clone(self):
+        return copy.deepcopy(self)
+
+
+class Archer:
+    def __init__(self):
+        pass
+
+    def clone(self):
+        return copy.deepcopy(self)
+
+
+class Mage:
+    def __init__(self):
+        pass
+
+    def clone(self):
+        return copy.deepcopy(self)
+
+
+class Healer:
+    def __init__(self):
+        pass
+
+    def clone(self):
+        return copy.deepcopy(self)
+
+
+class NPCFactory: pass

@@ -12,7 +12,7 @@ class NPCConfig:
     _names_dict = {
         'orc': ['Chakub', 'Duffthug', 'Sugbu', 'Gollik', 'Zogstuf', 'Yambul', 'Rok', 'Grimfang'],
         'human': ['Liam', 'Olivia', 'Noah', 'Emma', 'Oliver', 'Sophia', 'James', 'William'],
-        'high_elf': ['Durothil', 'Aeson', 'Elora', 'Qildor', 'Sharian', 'Ilyrana', 'Takari', 'Leilatha'],
+        'high elf': ['Durothil', 'Aeson', 'Elora', 'Qildor', 'Sharian', 'Ilyrana', 'Takari', 'Leilatha'],
     }
 
     _races_stats_dict = {
@@ -119,14 +119,20 @@ class NPC(NPCPrototype, NPCConfig):
     def stats_init(self): pass
 
     def clone(self,
-              race: str = NPCConfig._races_list[randrange(len(NPCConfig._races_list))],
+              race: str = None,
               name: str = None,
               available_armor: list = None,
               available_weapon: list = None):
         new = copy.deepcopy(self)
 
-        new._race = race
-        if not name: new._name = NPCConfig._names_dict[race][randrange(len(NPCConfig._names_dict[race]))]
+        if not race:
+            new._race = NPCConfig._races_list[randrange(len(NPCConfig._races_list))]
+        else: new._race = race
+
+        if not name:
+            new._name = NPCConfig._names_dict[new._race][randrange(len(NPCConfig._names_dict[new._race]))]
+        else: new._name = name
+
         if available_armor: new._available_armor = available_armor
         if available_weapon: new._available_weapon = available_weapon
 

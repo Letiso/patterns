@@ -86,9 +86,6 @@ class NPCConfig:
 
 class NPCPrototype(ABC):
     @abstractmethod
-    def __str__(self): pass
-
-    @abstractmethod
     def clone(self,
               race: str = None,
               name: str = None,
@@ -166,8 +163,8 @@ class NPCFactory:
         return random_warrior
 
     def get_random_mage(self):
-        random_warrior = self._base_warrior.clone()
-        return random_warrior
+        random_mage = self._base_mage.clone()
+        return random_mage
 
     def test(self):
         for npc in self.get_random_warrior(), self.get_random_mage(): print(npc)

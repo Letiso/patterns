@@ -187,10 +187,10 @@ class NPCFactory:
 
     def get_random_mage(self):
         return self._base_mage.clone()
-
-    def test(self):
-        for npc in self.get_random_warrior(), self.get_random_mage(): print(npc)
+    # TODO make more npc templates
 
 
 if __name__ == '__main__':
-    NPCFactory().test()
+    factory = NPCFactory()
+
+    for npc in factory.get_random_warrior(), factory.get_random_mage(): print(npc)

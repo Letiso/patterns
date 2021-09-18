@@ -237,7 +237,7 @@ class NPCSquadsFactory(NPCFactory):
             if 'get_random_' in factory_func
         }
 
-    def make_random_npc_squad(self, chosen_factory: str = 'get_random_npc', npc_count: int = 1):
+    def make_random_npc_squad(self, chosen_factory: str = 'get_random_npc', npc_count: int = 1) -> list:
         return [self.random_npc_factories[chosen_factory]()
                 for loop in range(npc_count)]
 

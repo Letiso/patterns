@@ -259,7 +259,7 @@ if __name__ == '__main__':
         for index, random_factory in enumerate(factories_list):
             print(f'{index} -  {random_factory}')
 
-        factory = input('\nPlease, chose and input needed factory:\n')
+        factory = input('\nPlease, chose and input needed factory index:\n')
         count = input('Input wishing npc count:\n')
 
         random_npc_squad = npc_squads_factory.make_random_npc_squad(str(factories_list[

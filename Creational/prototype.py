@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import copy
 from random import randrange
+import enum
 
 
 # Config module
@@ -143,11 +144,13 @@ class NPC(NPCPrototype, NPCConfig):
 
         if not race:
             new._race = NPCConfig._races_list[randrange(len(NPCConfig._races_list))]
-        else: new._race = race
+        else:
+            new._race = race
 
         if not name:
             new._name = NPCConfig._names_dict[new._race][randrange(len(NPCConfig._names_dict[new._race]))]
-        else: new._name = name
+        else:
+            new._name = name
 
         if available_armor: new._available_armor = available_armor
         if available_weapon: new._available_weapon = available_weapon
@@ -180,46 +183,93 @@ class NPCFactory:
         self._base_warrior = Warrior()
         self._base_mage = Mage()
 
-# Base templates demonstration
-##################################################################
-    def _get_base_warrior(self) -> Warrior:
+    # Base templates demonstration
+    ##################################################################
+    def get_base_warrior(self) -> Warrior:
         base_warrior = copy.deepcopy(self._base_warrior)
         base_warrior._name = f'Base {base_warrior.__class__.__name__}'
         return base_warrior
 
-    def _get_base_mage(self) -> Mage:
+    def get_base_mage(self) -> Mage:
         base_mage = copy.deepcopy(self._base_mage)
         base_mage._name = f'Base {base_mage.__class__.__name__}'
         return base_mage
-#################################################################
+
+    #################################################################
+
+    def _chose_random_class(self) -> NPC:
+        base_classes = [base_class for base_class in self.__dict__ if '_base_' in base_class]
+        return getattr(self, base_classes[randrange(len(base_classes))])
+
+    # Factory funcs
+
+    def get_random_npc(self) -> NPC:
+        return self._chose_random_class().clone()
+
+    def get_random_human(self) -> NPC:
+        return self._chose_random_class().clone(race='human')
+
+    def get_Lucas(self) -> NPC:
+        return self._chose_random_class().clone(race='high elf',
+                                                name='Lucas',
+                                                available_armor=['medium armor'])
 
     def get_random_warrior(self) -> Warrior:
         return self._base_warrior.clone()
 
-    def get_random_mage(self) -> Mage:
-        return self._base_mage.clone()
-
     def get_random_orc_warrior(self) -> Warrior:
         return self._base_warrior.clone(race='orc')
-
-    def get_random_fire_mage(self) -> Mage:
-        return self._base_mage.clone(available_weapon=['fire stuff'])
 
     def get_random_heavy_warrior(self) -> Warrior:
         return self._base_warrior.clone(available_armor=['heavy armor'],
                                         available_weapon=['heavy sword', 'sword and shield'])
 
-    def get_random_human(self) -> NPC:
-        return (self._base_warrior, self._base_mage)[randrange(2)].clone(race='human')
+    def get_random_mage(self) -> Mage:
+        return self._base_mage.clone()
 
-    def get_Lucas(self) -> Mage:
+    def get_random_fire_mage(self) -> Mage:
+        return self._base_mage.clone(available_weapon=['fire stuff'])
+
+    def get_random_high_elf_lighting_mage(self) -> Mage:
         return self._base_mage.clone(race='high elf',
-                                     name='Lucas',
-                                     available_armor=['medium armor'],
-                                     available_weapon=['fire stuff', 'lighting stuff'])
+                                     available_weapon=['lighting stuff'])
+
+
+class NPCSquadsFactory(NPCFactory):
+    def __init__(self):
+        NPCFactory.__init__(self)
+        self.random_npc_factories = {
+            factory_func: getattr(self, factory_func) for factory_func in NPCFactory.__dict__
+            if 'get_random_' in factory_func
+        }
+
+    def make_random_npc_squad(self, chosen_factory: str = 'get_random_npc', npc_count: int = 1):
+        return [self.random_npc_factories[chosen_factory]()
+                for loop in range(npc_count)]
 
 
 if __name__ == '__main__':
-    factory = NPCFactory()
+    npc_factory = NPCFactory()
+    npc_squads_factory = NPCSquadsFactory()
 
-    for npc in factory.get_random_orc_warrior(), factory.get_Lucas(): print(npc)
+    for base_npc in npc_factory.get_base_warrior(), npc_factory.get_base_mage(): print(base_npc)
+
+    for npc in npc_factory.get_Lucas(), : print(npc)
+
+    for random_npc in npc_squads_factory.make_random_npc_squad(): print(random_npc)
+
+    while True:
+        factories_list = list(npc_squads_factory.random_npc_factories)
+
+        print('\nChose from random factories:\n')
+        for index, random_factory in enumerate(factories_list):
+            print(f'{index} -  {random_factory}')
+
+        factory = input('\nPlease, chose and input needed factory:\n')
+        count = input('Input wishing npc count:\n')
+
+        random_npc_squad = npc_squads_factory.make_random_npc_squad(str(factories_list[
+                                                                            int(factory) if factory.isdigit() else 0]),
+                                                                    int(count) if count.isdigit() else 1)
+
+        for npc in random_npc_squad: print(npc)

@@ -64,15 +64,15 @@ class NPCConfig:
             },
         },
         'mage': {
-            'fire_stuff': {
+            'fire stuff': {
                 'damage': 55,
                 'ability cost': 30
             },
-            'ice_stuff': {
+            'ice stuff': {
                 'damage': 45,
                 'ability cost': 20
             },
-            'lighting_stuff': {
+            'lighting stuff': {
                 'damage': 50,
                 'ability cost': 25
             },
@@ -143,13 +143,11 @@ class NPC(NPCPrototype, NPCConfig):
 
         if not race:
             new._race = NPCConfig._races_list[randrange(len(NPCConfig._races_list))]
-        else:
-            new._race = race
+        else: new._race = race
 
         if not name:
             new._name = NPCConfig._names_dict[new._race][randrange(len(NPCConfig._names_dict[new._race]))]
-        else:
-            new._name = name
+        else: new._name = name
 
         if available_armor: new._available_armor = available_armor
         if available_weapon: new._available_weapon = available_weapon
@@ -182,15 +180,46 @@ class NPCFactory:
         self._base_warrior = Warrior()
         self._base_mage = Mage()
 
+# Base templates demonstration
+##################################################################
+    def _get_base_warrior(self) -> Warrior:
+        base_warrior = copy.deepcopy(self._base_warrior)
+        base_warrior._name = f'Base {base_warrior.__class__.__name__}'
+        return base_warrior
+
+    def _get_base_mage(self) -> Mage:
+        base_mage = copy.deepcopy(self._base_mage)
+        base_mage._name = f'Base {base_mage.__class__.__name__}'
+        return base_mage
+#################################################################
+
     def get_random_warrior(self) -> Warrior:
         return self._base_warrior.clone()
 
     def get_random_mage(self) -> Mage:
         return self._base_mage.clone()
-    # TODO make more npc templates
+
+    def get_random_orc_warrior(self) -> Warrior:
+        return self._base_warrior.clone(race='orc')
+
+    def get_random_fire_mage(self) -> Mage:
+        return self._base_mage.clone(available_weapon=['fire stuff'])
+
+    def get_random_heavy_warrior(self) -> Warrior:
+        return self._base_warrior.clone(available_armor=['heavy armor'],
+                                        available_weapon=['heavy sword', 'sword and shield'])
+
+    def get_random_human(self) -> NPC:
+        return (self._base_warrior, self._base_mage)[randrange(2)].clone(race='human')
+
+    def get_Lucas(self) -> Mage:
+        return self._base_mage.clone(race='high elf',
+                                     name='Lucas',
+                                     available_armor=['medium armor'],
+                                     available_weapon=['fire stuff', 'lighting stuff'])
 
 
 if __name__ == '__main__':
     factory = NPCFactory()
 
-    for npc in factory.get_random_warrior(), factory.get_random_mage(): print(npc)
+    for npc in factory.get_random_orc_warrior(), factory.get_Lucas(): print(npc)

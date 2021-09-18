@@ -1,12 +1,9 @@
 from abc import ABC, abstractmethod
 import copy
 from random import randrange
-import enum
 
 
 # Config module
-
-
 class NPCConfig:
     _races_list = ['orc', 'human', 'high elf']
 
@@ -82,9 +79,7 @@ class NPCConfig:
     }
 
 
-# Main module
-
-
+# Prototype factory module
 class NPCPrototype(ABC):
     @abstractmethod
     def clone(self,
@@ -194,7 +189,6 @@ class NPCFactory:
         base_mage = copy.deepcopy(self._base_mage)
         base_mage._name = f'Base {base_mage.__class__.__name__}'
         return base_mage
-
     #################################################################
 
     def _chose_random_class(self) -> NPC:

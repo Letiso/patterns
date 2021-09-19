@@ -139,13 +139,11 @@ class NPC(NPCPrototype, NPCConfig):
 
         if not race:
             new._race = NPCConfig._races_list[randrange(len(NPCConfig._races_list))]
-        else:
-            new._race = race
+        else: new._race = race
 
         if not name:
             new._name = NPCConfig._names_dict[new._race][randrange(len(NPCConfig._names_dict[new._race]))]
-        else:
-            new._name = name
+        else: new._name = name
 
         if available_armor: new._available_armor = available_armor
         if available_weapon: new._available_weapon = available_weapon
@@ -203,7 +201,7 @@ class NPCFactory:
     def get_random_human(self) -> NPC:
         return self._chose_random_class().clone(race='human')
 
-    def get_Lucas(self) -> NPC:
+    def get_named_Lucas(self) -> NPC:
         return self._chose_random_class().clone(race='high elf',
                                                 name='Lucas',
                                                 available_armor=['medium armor'])
@@ -215,8 +213,12 @@ class NPCFactory:
         return self._base_warrior.clone(race='orc')
 
     def get_random_heavy_warrior(self) -> Warrior:
-        return self._base_warrior.clone(available_armor=['heavy armor'],
-                                        available_weapon=['heavy sword', 'sword and shield'])
+        return self._base_warrior.clone(available_armor=['heavy armor'])
+
+    def get_random_orc_heavy_warrior(self) -> Warrior:
+        return self._base_warrior.clone(race='orc',
+                                        available_armor=['heavy armor'],
+                                        available_weapon=['heavy sword'])
 
     def get_random_mage(self) -> Mage:
         return self._base_mage.clone()
@@ -243,27 +245,48 @@ class NPCSquadsFactory(NPCFactory):
 
 
 if __name__ == '__main__':
+    # Initialisation
     npc_factory = NPCFactory()
     npc_squads_factory = NPCSquadsFactory()
 
-    for base_npc in npc_factory.get_base_warrior(), npc_factory.get_base_mage(): print(base_npc)
+    def get_all_base_npc():
+        for base_npc in npc_factory.get_base_warrior(), npc_factory.get_base_mage(): print(base_npc)
 
-    for npc in npc_factory.get_Lucas(), : print(npc)
+    def get_named_npc(name):
+        named_npc_method = list(attr for attr in npc_factory.__class__.__dict__ if f"get_named_{name}" in attr)
+        if named_npc_method:
+            named_npc = getattr(npc_factory, named_npc_method[0])()
+            print(named_npc)
+        else: print(fr"  ////   NPCFactory.get_named_{name}() method does not exist. \\\\")
 
-    for random_npc in npc_squads_factory.make_random_npc_squad(): print(random_npc)
-
-    while True:
+    def get_random_npc_squad():
         factories_list = list(npc_squads_factory.random_npc_factories)
 
-        print('\nChose from random factories:\n')
+        print('\nAvailable random factories:\n')
         for index, random_factory in enumerate(factories_list):
             print(f'{index} -  {random_factory}')
 
         factory = input('\nPlease, chose and input needed factory index:\n')
         count = input('Input wishing npc count:\n')
 
-        random_npc_squad = npc_squads_factory.make_random_npc_squad(str(factories_list[
-                                                                            int(factory) if factory.isdigit() else 0]),
-                                                                    int(count) if count.isdigit() else 1)
-
+        random_npc_squad = npc_squads_factory.make_random_npc_squad(
+            str(factory := factories_list[int(factory) if factory.isdigit() else 0]),
+            int(count) if count.isdigit() else 1)
+        print(f'\nNPCFactory.{factory}() method is using now...')
         for npc in random_npc_squad: print(npc)
+
+    # Test code
+
+    get_all_base_npc()
+    get_named_npc('Lucas'); get_named_npc('Joan')
+
+    for random_npc in npc_squads_factory.make_random_npc_squad(): print(random_npc)
+
+    # Terminal user interface
+    cont = True
+    while cont:
+        get_random_npc_squad()
+        continue_input = input('Do you wish to continue npc generating?\n')
+        cont = True if continue_input == '' \
+                    or continue_input.lower() == 'yes' \
+                    or continue_input.lower() == 'y' else False

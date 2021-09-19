@@ -277,10 +277,10 @@ if __name__ == '__main__':
 
     # Test code
 
-    get_all_base_npc()
-    get_named_npc('Lucas'); get_named_npc('Joan')
-
-    for random_npc in npc_squads_factory.make_random_npc_squad(): print(random_npc)
+    # get_all_base_npc()
+    # get_named_npc('Lucas'); get_named_npc('Joan')
+    #
+    # for random_npc in npc_squads_factory.make_random_npc_squad(): print(random_npc)
 
     # Terminal user interface
     cont = True

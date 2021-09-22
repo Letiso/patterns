@@ -286,7 +286,3 @@ if __name__ == '__main__':
     cont = True
     while cont:
         get_random_npc_squad()
-        continue_input = input('Do you wish to continue npc generating?\n')
-        cont = True if continue_input == '' \
-                    or continue_input.lower() == 'yes' \
-                    or continue_input.lower() == 'y' else False

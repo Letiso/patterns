@@ -8,12 +8,12 @@ class UsualString:
 class BytesString:
     @staticmethod
     def specific_request() -> list:
-        return [ord(letter) for letter in "Decoded encoded bytes string."]
+        return [ord(letter) for letter in "Decoded bytes string."]
 
 
 class Adapter(UsualString, BytesString):
     def request(self) -> str:
-        return f"Adapter: (TRANSLATED) {bytes(self.specific_request()).decode(encoding='utf-8')}"
+        return f"Adapter: {bytes(self.specific_request()).decode(encoding='utf-8')}"
 
 
 def client_code(string: UsualString) -> None:
@@ -27,7 +27,7 @@ if __name__ == "__main__":
     print("\n")
 
     bites_string = BytesString()
-    print("Client: The BinaryString class can't be represented as a string.\n"
+    print(f"Client: The BinaryString class can't be represented as a {usual_string.__class__.__name__}.\n"
           "See, I don't understand it:")
     print(f"BinaryString: {bites_string.specific_request()}", end="\n\n")
 

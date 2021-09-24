@@ -1,39 +1,11 @@
 from abc import ABC, abstractmethod
 
 
-# Devices interface
+# Realisation interface
 class Device(ABC):
     def __init__(self):
         self._isEnabled = None
         self._volume = self._prevVolume = self._channel = self._channelsAmount = 0
-
-    @abstractmethod
-    def isEnabled(self) -> bool: pass
-
-    @abstractmethod
-    def enable(self): pass
-
-    @abstractmethod
-    def disable(self): pass
-
-    @abstractmethod
-    def volume(self) -> int: pass
-
-    @abstractmethod
-    def prevVolume(self) -> int: pass
-
-    @abstractmethod
-    def channelsAmount(self) -> int: pass
-
-    @abstractmethod
-    def channel(self) -> int: pass
-
-
-# Concrete Devices
-class Radio(Device):
-    def __init__(self):
-        super().__init__()
-        self._channelsAmount = 19
 
     @property
     def isEnabled(self) -> bool:
@@ -80,6 +52,13 @@ class Radio(Device):
     @channel.setter
     def channel(self, channel: int):
         self._channel = channel
+
+
+# Concrete Realisations
+class Radio(Device):
+    def __init__(self):
+        super().__init__()
+        self._channelsAmount = 19
 
 
 class TV(Device):
@@ -87,53 +66,8 @@ class TV(Device):
         super().__init__()
         self._channelsAmount = 31
 
-    @property
-    def isEnabled(self) -> bool:
-        return self._isEnabled
 
-    @isEnabled.setter
-    def isEnabled(self, value: bool):
-        self._isEnabled = value
-
-    def enable(self):
-        self.isEnabled = True
-
-    def disable(self):
-        self.isEnabled = False
-
-    @property
-    def volume(self) -> int:
-        return self._volume
-
-    @volume.setter
-    def volume(self, volume: int):
-        self._volume = volume
-
-    @property
-    def prevVolume(self) -> int:
-        return self._prevVolume
-
-    @prevVolume.setter
-    def prevVolume(self, volume: int):
-        self._prevVolume = volume
-
-    @property
-    def channelsAmount(self) -> int:
-        return self._channelsAmount
-
-    @channelsAmount.setter
-    def channelsAmount(self, amount: int):
-        self._channelsAmount = amount
-
-    @property
-    def channel(self) -> int:
-        return self._channel
-
-    @channel.setter
-    def channel(self, channel: int):
-        self._channel = channel
-
-
+# Abstractions
 class Remote:
     def __init__(self, device: Device):
         self._device = device
@@ -190,6 +124,7 @@ class AdvancedRemote(Remote):
         print(f'\t - \tVolume now: {self._device.volume}')
 
 
+# Client code
 def client_code(remote: Remote):
     remote.togglePower()
 

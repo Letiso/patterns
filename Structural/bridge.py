@@ -1,10 +1,39 @@
 from abc import ABC, abstractmethod
 
 
+# Devices interface
 class Device(ABC):
     def __init__(self):
-        self._isEnabled = self._channelsCount = None
-        self._volume = self._channel = 0
+        self._isEnabled = None
+        self._volume = self._prevVolume = self._channel = self._channelsAmount = 0
+
+    @abstractmethod
+    def isEnabled(self) -> bool: pass
+
+    @abstractmethod
+    def enable(self): pass
+
+    @abstractmethod
+    def disable(self): pass
+
+    @abstractmethod
+    def channelsAmount(self) -> int: pass
+
+    @abstractmethod
+    def volume(self) -> int: pass
+
+    @abstractmethod
+    def prevVolume(self) -> int: pass
+
+    @abstractmethod
+    def channel(self) -> int: pass
+
+
+# Concrete Devices
+class Radio(Device):
+    def __init__(self):
+        super().__init__()
+        self._channelsAmount = 19
 
     @property
     def isEnabled(self) -> bool:
@@ -15,67 +44,93 @@ class Device(ABC):
         self._isEnabled = value
 
     def enable(self):
-        self._isEnabled = True
+        self.isEnabled = True
 
     def disable(self):
-        self._isEnabled = False
+        self.isEnabled = False
 
     @property
-    def channelsCount(self):
-        return self._channelsCount
+    def channelsAmount(self) -> int:
+        return self._channelsAmount
 
-    @channelsCount.setter
-    def channelsCount(self, count: int):
-        self._channelsCount = count
+    @channelsAmount.setter
+    def channelsAmount(self, amount: int):
+        self._channelsAmount = amount
 
     @property
-    def volume(self):
+    def volume(self) -> int:
         return self._volume
 
     @volume.setter
     def volume(self, volume: int):
         self._volume = volume
 
-    @abstractmethod
-    def getChannel(self): pass
+    @property
+    def prevVolume(self) -> int:
+        return self._prevVolume
 
-    @abstractmethod
-    def setChannel(self, channel: int): pass
+    @prevVolume.setter
+    def prevVolume(self, volume: int):
+        self._prevVolume = volume
 
-
-class Radio(Device):
-    def __init__(self):
-        super().__init__()
-        self._channelsCount = 20
-
-    def getVolume(self):
-        return self._volume
-
-    def setVolume(self, volume: int):
-        self._volume = volume
-
-    def getChannel(self):
+    @property
+    def channel(self) -> int:
         return self._channel
 
-    def setChannel(self, channel: int):
+    @channel.setter
+    def channel(self, channel: int):
         self._channel = channel
 
 
 class TV(Device):
     def __init__(self):
         super().__init__()
-        self._channelsCount = 31
+        self._channelsAmount = 31
 
-    def getVolume(self):
+    @property
+    def isEnabled(self) -> bool:
+        return self._isEnabled
+
+    @isEnabled.setter
+    def isEnabled(self, value: bool):
+        self._isEnabled = value
+
+    def enable(self):
+        self.isEnabled = True
+
+    def disable(self):
+        self.isEnabled = False
+
+    @property
+    def channelsAmount(self) -> int:
+        return self._channelsAmount
+
+    @channelsAmount.setter
+    def channelsAmount(self, amount: int):
+        self._channelsAmount = amount
+
+    @property
+    def volume(self) -> int:
         return self._volume
 
-    def setVolume(self, volume: int):
+    @volume.setter
+    def volume(self, volume: int):
         self._volume = volume
 
-    def getChannel(self):
+    @property
+    def prevVolume(self) -> int:
+        return self._prevVolume
+
+    @prevVolume.setter
+    def prevVolume(self, volume: int):
+        self._prevVolume = volume
+
+    @property
+    def channel(self) -> int:
         return self._channel
 
-    def setChannel(self, channel: int):
+    @channel.setter
+    def channel(self, channel: int):
         self._channel = channel
 
 
@@ -84,42 +139,78 @@ class Remote:
         self._device = device
 
     def togglePower(self):
+        print(f'{"_" * 75}\ntogglePower()')
         if self._device.isEnabled:
             self._device.disable()
         else: self._device.enable()
-        print(f"{self._device.__class__.__name__} is turned {'on' if self._device.isEnabled else 'off'} now")
+        print(f"{self._device.__class__.__name__} is turned {'on' if self._device.isEnabled else 'off'} now"
+              f"\n{'_' * 75}")
 
     def volumeUp(self):
+        print(f'{"-" * 10}\nvolumeUp()')
+        print(f'Current volume: {self._device.volume}', end="")
         if self._device.volume < 100:
             self._device.volume += 10
-            print('Volume is up')
-        else: print('Maximal volume')
+            print(f'\t - \tVolume is up and now: {self._device.volume}')
+        else: print('\t - \tAlready maximum volume')
 
     def volumeDown(self):
-        if self._device.volume > 0:
+        print(f'{"-" * 10}\nvolumeDown()')
+        print(f'Current volume: {self._device.volume}', end="")
+        if self._device.volume:
             self._device.volume += 10
-            print('Volume is down')
-        else: print('Minimal volume')
+            print(f'\t - \tVolume is down and now: {self._device.volume}')
+        else: print('\t - \tAlready minimum volume')
 
     def nextChannel(self):
-        if (channel := self._device.getChannel()) <= self._device.channelsCount:
-            self._device.setChannel(channel + 1)
-        else: self._device.setChannel(0)
-        print()
+        print(f'{"-" * 10}\nnextChannel()')
+        print(f'Current channel: {self._device.channel}', end="")
+        if self._device.channel < self._device.channelsAmount:
+            self._device.channel += 1
+        else: self._device.channel = 0
+        print(f'\t - \tNext channel now: {self._device.channel}')
 
     def previousChannel(self):
-        if (channel := self._device.getChannel()) >= 0:
-            self._device.setChannel(channel - 1)
-        else: self._device.setChannel(self._device.channelsCount)
+        print(f'{"-" * 10}\npreviousChannel()')
+        print(f'Current channel: {self._device.channel}', end="")
+        if self._device.channel:
+            self._device.channel -= 1
+        else: self._device.channel = self._device.channelsAmount
+        print(f'\t - \tPrevious channel now: {self._device.channel}')
+
+
+class AdvancedRemote(Remote):
+    def mute(self):
+        print(f'{"-" * 10}\nmute()')
+        print(f'Current volume: {self._device.volume}', end="")
+        if self._device.volume:
+            self._device.prevVolume = self._device.volume
+            self._device.volume = 0
+        else: self._device.volume = self._device.prevVolume
+        print(f'\t - \tVolume now: {self._device.volume}')
 
 
 def client(remote: Remote):
-    [remote.togglePower()
-     for loop in range(3)]
+    remote.togglePower()
 
     remote.previousChannel()
     remote.nextChannel()
 
+    remote.volumeDown()
+    remote.volumeUp()
+    remote.volumeUp()
+
 
 if __name__ == '__main__':
-    client(Remote(Radio()))
+    radioSimpleRemote = Remote(Radio())
+    tvAdvancedRemote = AdvancedRemote(TV())
+
+    client(radioSimpleRemote)
+    radioSimpleRemote.togglePower()
+
+    print('\n')
+
+    client(tvAdvancedRemote)
+    tvAdvancedRemote.mute()
+    tvAdvancedRemote.mute()
+    tvAdvancedRemote.togglePower()

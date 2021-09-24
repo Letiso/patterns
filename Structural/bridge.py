@@ -17,13 +17,13 @@ class Device(ABC):
     def disable(self): pass
 
     @abstractmethod
-    def channelsAmount(self) -> int: pass
-
-    @abstractmethod
     def volume(self) -> int: pass
 
     @abstractmethod
     def prevVolume(self) -> int: pass
+
+    @abstractmethod
+    def channelsAmount(self) -> int: pass
 
     @abstractmethod
     def channel(self) -> int: pass
@@ -50,14 +50,6 @@ class Radio(Device):
         self.isEnabled = False
 
     @property
-    def channelsAmount(self) -> int:
-        return self._channelsAmount
-
-    @channelsAmount.setter
-    def channelsAmount(self, amount: int):
-        self._channelsAmount = amount
-
-    @property
     def volume(self) -> int:
         return self._volume
 
@@ -72,6 +64,14 @@ class Radio(Device):
     @prevVolume.setter
     def prevVolume(self, volume: int):
         self._prevVolume = volume
+
+    @property
+    def channelsAmount(self) -> int:
+        return self._channelsAmount
+
+    @channelsAmount.setter
+    def channelsAmount(self, amount: int):
+        self._channelsAmount = amount
 
     @property
     def channel(self) -> int:
@@ -102,14 +102,6 @@ class TV(Device):
         self.isEnabled = False
 
     @property
-    def channelsAmount(self) -> int:
-        return self._channelsAmount
-
-    @channelsAmount.setter
-    def channelsAmount(self, amount: int):
-        self._channelsAmount = amount
-
-    @property
     def volume(self) -> int:
         return self._volume
 
@@ -124,6 +116,14 @@ class TV(Device):
     @prevVolume.setter
     def prevVolume(self, volume: int):
         self._prevVolume = volume
+
+    @property
+    def channelsAmount(self) -> int:
+        return self._channelsAmount
+
+    @channelsAmount.setter
+    def channelsAmount(self, amount: int):
+        self._channelsAmount = amount
 
     @property
     def channel(self) -> int:
@@ -190,7 +190,7 @@ class AdvancedRemote(Remote):
         print(f'\t - \tVolume now: {self._device.volume}')
 
 
-def client(remote: Remote):
+def client_code(remote: Remote):
     remote.togglePower()
 
     remote.previousChannel()
@@ -205,12 +205,12 @@ if __name__ == '__main__':
     radioSimpleRemote = Remote(Radio())
     tvAdvancedRemote = AdvancedRemote(TV())
 
-    client(radioSimpleRemote)
+    client_code(radioSimpleRemote)
     radioSimpleRemote.togglePower()
 
     print('\n')
 
-    client(tvAdvancedRemote)
+    client_code(tvAdvancedRemote)
     tvAdvancedRemote.mute()
     tvAdvancedRemote.mute()
     tvAdvancedRemote.togglePower()

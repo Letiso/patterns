@@ -1,5 +1,9 @@
 import json
 
+"""
+Flyweight
+"""
+
 
 class Flyweight:
     def __init__(self, internal_state: list):
@@ -17,10 +21,10 @@ class FlyweightFactory:
             self._flyweights[self.getKey(state)] = Flyweight(state)
 
     @staticmethod
-    def getKey(state: list) -> str:
-        return '_'.join(sorted(state))
+    def getKey(internal_state: list) -> str:
+        return '_'.join(internal_state)
 
-    def getFlyweight(self, internal_state) -> Flyweight:
+    def getFlyweight(self, internal_state: list) -> Flyweight:
         key = self.getKey(internal_state)
 
         if self._flyweights.get(key):
@@ -37,6 +41,11 @@ class FlyweightFactory:
         print('_' * 70)
 
 
+"""
+PoliceDB
+"""
+
+
 class CarRegisterCard:
     def __init__(self, internal_state: Flyweight, external_state: list):
         self._internalState = internal_state
@@ -46,16 +55,7 @@ class CarRegisterCard:
         internal_state = json.dumps(self._internalState.getCarTemplate())
         external_state = json.dumps(self._externalState)
 
-        #         print(f"""{'*' * 40}
-        # self._internalState: {self._internalState}
-        # json.dumps(self._internalState): {json.dumps(self._internalState)}
-        # json.loads(self._internalState): {'["BMW", "M5", "red"]'}
-        # {'*' * 40}
-        # """)
-
         return f"Car 'united' data: {external_state}, {internal_state}"
-        # return f"\nFlyweight shared {internal_state} fields, " \
-        #        f"but {external_state} fields is unique for every object"
 
 
 class PoliceDataBase:
@@ -75,23 +75,29 @@ class PoliceDataBase:
 
         self._dataBase[plates] = CarRegisterCard(flyweight, [plates, owner])
 
-    def getCar(self, plates: str):
-        print(f"\nGet a car by query '{plates}'")
+    def getCar(self, plates: str) -> None:
+        print(f"\nGet a car by the following query: '{plates}'")
         print(self._dataBase[plates])
 
-    def getAllCars(self):
+    def getAllCars(self) -> None:
         print(f"{'*' * 75}\nList of every car card in the data base...")
         for carPlate, carCard in self._dataBase.items():
             print(f"\nCar plate:{carPlate}\n{str(carCard)}")
         print('*' * 75)
 
 
+"""
+Client
+"""
+
+
 if __name__ == '__main__':
-    policeCarRegister = PoliceDataBase()
+    PoliceRegister_of_Cars = PoliceDataBase()
+
 
     def client_code(*car_data):
-        policeCarRegister.addCar_to_Register(*car_data)
-        policeCarRegister._flyweightFactory.listFlyweights()
+        PoliceRegister_of_Cars.addCar_to_Register(*car_data)
+        PoliceRegister_of_Cars._flyweightFactory.listFlyweights()
 
 
     existing_car_template = ("CL234IR", "James Doe", "BMW", "M5", "red")
@@ -101,6 +107,6 @@ if __name__ == '__main__':
 
     client_code(*not_known_car_template)
 
-    policeCarRegister.getAllCars()
+    PoliceRegister_of_Cars.getAllCars()
 
-    policeCarRegister.getCar("CL234IR")
+    PoliceRegister_of_Cars.getCar("CL234IR")

@@ -1,16 +1,22 @@
 import json
 
 
-# Immutable object fields
 class Flyweight:
-    def __init__(self, internal_state: str):
+    def __init__(self, internal_state: list):
         self._internalState = internal_state
 
-    def operation(self, external_state: str):
+    def getStatus(self, external_state: list):
         internal_state = json.dumps(self._internalState)
         external_state = json.dumps(external_state)
 
-        return f"Flyweight shared {internal_state} fields, but {external_state} fields is unique for every object"
+#         print(f"""{'*' * 40}
+# self._internalState: {self._internalState}
+# json.dumps(self._internalState): {json.dumps(self._internalState)}
+# json.loads(self._internalState): {'["BMW", "M5", "red"]'}
+# {'*' * 40}
+# """)
+
+        print(f"\nFlyweights shared {internal_state} fields, but {external_state} fields is unique for every object")
 
 
 class FlyweightFactory:
@@ -46,11 +52,12 @@ def addCar_to_PoliceDataBase(factory: FlyweightFactory,
                              brand: str, model: str,  color: str) -> None:
 
     print(f"\nClient code: Adding a car to police Data Base...")
-    # flyweight =
+    flyweight = factory.getFlyweight([brand, model, color])
+    flyweight.getStatus([plates, owner])
 
 
 if __name__ == '__main__':
-    templates_factory = FlyweightFactory([
+    carTemplatesFactory = FlyweightFactory([
         ["Chevrolet", "Camaro2018", "pink"],
         ["Mercedes Benz", "C300", "black"],
         ["Mercedes Benz", "C500", "red"],
@@ -58,4 +65,10 @@ if __name__ == '__main__':
         ["BMW", "X6", "white"],
     ])
 
-    templates_factory.listFlyweights()
+    carTemplatesFactory.listFlyweights()
+
+    addCar_to_PoliceDataBase(carTemplatesFactory, "CL234IR", "James Doe", "BMW", "M5", "red")
+
+    addCar_to_PoliceDataBase(carTemplatesFactory, "CL234IR", "James Doe", "BMW", "X1", "red")
+
+    carTemplatesFactory.listFlyweights()

@@ -5,18 +5,8 @@ class Flyweight:
     def __init__(self, internal_state: list):
         self._internalState = internal_state
 
-    def getStatus(self, external_state: list):
-        internal_state = json.dumps(self._internalState)
-        external_state = json.dumps(external_state)
-
-#         print(f"""{'*' * 40}
-# self._internalState: {self._internalState}
-# json.dumps(self._internalState): {json.dumps(self._internalState)}
-# json.loads(self._internalState): {'["BMW", "M5", "red"]'}
-# {'*' * 40}
-# """)
-
-        print(f"\nFlyweights shared {internal_state} fields, but {external_state} fields is unique for every object")
+    def getCarTemplate(self) -> list:
+        return self._internalState
 
 
 class FlyweightFactory:
@@ -47,28 +37,70 @@ class FlyweightFactory:
         print('_' * 70)
 
 
-def addCar_to_PoliceDataBase(factory: FlyweightFactory,
-                             plates: str, owner: str,
-                             brand: str, model: str,  color: str) -> None:
+class CarRegisterCard:
+    def __init__(self, internal_state: Flyweight, external_state: list):
+        self._internalState = internal_state
+        self._externalState = external_state
 
-    print(f"\nClient code: Adding a car to police Data Base...")
-    flyweight = factory.getFlyweight([brand, model, color])
-    flyweight.getStatus([plates, owner])
+    def __str__(self):
+        internal_state = json.dumps(self._internalState.getCarTemplate())
+        external_state = json.dumps(self._externalState)
+
+        #         print(f"""{'*' * 40}
+        # self._internalState: {self._internalState}
+        # json.dumps(self._internalState): {json.dumps(self._internalState)}
+        # json.loads(self._internalState): {'["BMW", "M5", "red"]'}
+        # {'*' * 40}
+        # """)
+
+        return f"Car 'united' data: {external_state}, {internal_state}"
+        # return f"\nFlyweight shared {internal_state} fields, " \
+        #        f"but {external_state} fields is unique for every object"
+
+
+class PoliceDataBase:
+    def __init__(self):
+        self._dataBase = dict()
+        self._flyweightFactory = FlyweightFactory(
+            [["Chevrolet", "Camaro2018", "pink"],
+             ["Mercedes Benz", "C300", "black"],
+             ["Mercedes Benz", "C500", "red"],
+             ["BMW", "M5", "red"],
+             ["BMW", "X6", "white"], ])
+
+    def addCar_to_Register(self, plates: str, owner: str,
+                           brand: str, model: str, color: str) -> None:
+        print(f"\nClient code: Adding a car to police Data Base...\n{plates, owner, brand, model, color}")
+        flyweight = self._flyweightFactory.getFlyweight([brand, model, color])
+
+        self._dataBase[plates] = CarRegisterCard(flyweight, [plates, owner])
+
+    def getCar(self, plates: str):
+        print(f"\nGet a car by query '{plates}'")
+        print(self._dataBase[plates])
+
+    def getAllCars(self):
+        print(f"{'*' * 75}\nList of every car card in the data base...")
+        for carPlate, carCard in self._dataBase.items():
+            print(f"\nCar plate:{carPlate}\n{str(carCard)}")
+        print('*' * 75)
 
 
 if __name__ == '__main__':
-    carTemplatesFactory = FlyweightFactory([
-        ["Chevrolet", "Camaro2018", "pink"],
-        ["Mercedes Benz", "C300", "black"],
-        ["Mercedes Benz", "C500", "red"],
-        ["BMW", "M5", "red"],
-        ["BMW", "X6", "white"],
-    ])
+    policeCarRegister = PoliceDataBase()
 
-    carTemplatesFactory.listFlyweights()
+    def client_code(*car_data):
+        policeCarRegister.addCar_to_Register(*car_data)
+        policeCarRegister._flyweightFactory.listFlyweights()
 
-    addCar_to_PoliceDataBase(carTemplatesFactory, "CL234IR", "James Doe", "BMW", "M5", "red")
 
-    addCar_to_PoliceDataBase(carTemplatesFactory, "CL234IR", "James Doe", "BMW", "X1", "red")
+    existing_car_template = ("CL234IR", "James Doe", "BMW", "M5", "red")
+    not_known_car_template = ("CL234IB", "Sue Doe", "BMW", "X1", "red")
 
-    carTemplatesFactory.listFlyweights()
+    client_code(*existing_car_template)
+
+    client_code(*not_known_car_template)
+
+    policeCarRegister.getAllCars()
+
+    policeCarRegister.getCar("CL234IR")

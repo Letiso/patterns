@@ -1,4 +1,3 @@
-# 12 минут
 from random import randrange
 
 

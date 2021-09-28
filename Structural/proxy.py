@@ -3,13 +3,13 @@ from abc import ABC, abstractmethod
 
 class VideoLibrary(ABC):
     @abstractmethod
-    def getVideosList(self): pass
+    def getVideosList(self) -> None: pass
 
     @abstractmethod
-    def getVideoInfo(self, query: str): pass
+    def getVideoInfo(self, query: str) -> None: pass
 
     @abstractmethod
-    def getVideo(self, query: str): pass
+    def getVideo(self, query: str) -> str: pass
 
     @abstractmethod
     def addVideo(self, new_video: tuple): pass
@@ -67,7 +67,7 @@ class WebVideoLibraryCacheProxy(VideoLibrary):
         self._service = WebVideoLibrary()
         self._videos_cache = {}
 
-    def getVideosList(self):
+    def getVideosList(self) -> None:
         self._service.getVideosList()
 
     def getVideoInfo(self, query: str) -> None:
@@ -106,32 +106,32 @@ class WebVideoLibrarySecurityProxy(VideoLibrary):
         self._accessDenied = 'Access denied. Please, make sure you have permission'
 
     @property
-    def access(self):
+    def access(self) -> bool:
         return self._access
 
     @access.setter
-    def access(self, user_token: str):
+    def access(self, user_token: str) -> None:
         if user_token in self._valid_tokens:
             self._access = True
 
     @checkAccess
-    def getVideosList(self):
+    def getVideosList(self) -> None:
         self._service.getVideosList()
 
     @checkAccess
-    def getVideoInfo(self, query: str):
+    def getVideoInfo(self, query: str) -> None:
         self._service.getVideoInfo(query)
 
     @checkAccess
-    def getVideo(self, query: str):
+    def getVideo(self, query: str) -> None:
         self._service.getVideo(query)
 
     @checkAccess
-    def addVideo(self, new_video: tuple):
+    def addVideo(self, new_video: tuple) -> None:
         self._service.addVideo(new_video)
 
     @checkAccess
-    def delVideo(self, video_to_del: str):
+    def delVideo(self, video_to_del: str) -> None:
         self._service.delVideo(video_to_del)
 
 
@@ -153,4 +153,5 @@ if __name__ == '__main__':
         video_lib.getVideosList()
 
 
+    # client_code(WebVideoLibraryCacheProxy())
     client_code(WebVideoLibrarySecurityProxy())

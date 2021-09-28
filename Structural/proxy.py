@@ -88,6 +88,7 @@ class WebVideoLibraryCacheProxy(VideoLibrary):
         self._service.delVideo(video_to_del)
 
 
+# WebVideoLibrarySecurityProxy methods decorator
 def checkAccess(method):
     def wrapper(self, *args):
         if self.access: method(self, *args)

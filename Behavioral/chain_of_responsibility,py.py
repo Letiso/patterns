@@ -27,7 +27,7 @@ class BaseHandler(Handler):
 
 
 # Concrete handlers
-class FrontEndDeveloper(BaseHandler):
+class FrontEndDeveloperHandler(BaseHandler):
     def handle(self, request: str) -> str:
         if request == 'front':
             return f'{self.__class__.__name__}: I can do {request}'
@@ -35,7 +35,7 @@ class FrontEndDeveloper(BaseHandler):
             return super().handle(request)
 
 
-class BackEndDeveloper(BaseHandler):
+class BackEndDeveloperHandler(BaseHandler):
     def handle(self, request: str) -> str:
         if request == 'back':
             return f'{self.__class__.__name__}: I can do {request}'
@@ -43,7 +43,7 @@ class BackEndDeveloper(BaseHandler):
             return super().handle(request)
 
 
-class HR(BaseHandler):
+class HRHandler(BaseHandler):
     def handle(self, request: str) -> str:
         if request == 'people':
             return f'{self.__class__.__name__}: I can do {request}'
@@ -54,7 +54,7 @@ class HR(BaseHandler):
 # Client code
 if __name__ == '__main__':
     def client_code(request):
-        front_dev, back_dev, hr = FrontEndDeveloper(), BackEndDeveloper(), HR()
+        front_dev, back_dev, hr = FrontEndDeveloperHandler(), BackEndDeveloperHandler(), HRHandler()
         front_dev.setNext(back_dev).setNext(hr)
         print(front_dev.handle(request))
 

@@ -101,7 +101,7 @@ class WebVideoLibrarySecurityProxy(VideoLibrary):
     def __init__(self):
         self._service = WebVideoLibraryCacheProxy()
         # self._service = WebVideoLibrary()
-        self._valid_tokens = ['sk552sr', 'lp476mu', 'zx557jh']
+        self._validTokens = ['sk552sr', 'lp476mu', 'zx557jh']
         self._access = False
         self._accessDenied = 'Access denied. Please, make sure you have permission'
 
@@ -111,7 +111,7 @@ class WebVideoLibrarySecurityProxy(VideoLibrary):
 
     @access.setter
     def access(self, user_token: str) -> None:
-        if user_token in self._valid_tokens:
+        if user_token in self._validTokens:
             self._access = True
 
     @checkAccess

@@ -1,31 +1,34 @@
 from abc import ABC, abstractmethod
 
 
+# Interface and abstract class
 class Handler(ABC):
     @abstractmethod
     def setNext(self, handler): pass
 
     @abstractmethod
-    def handle(self, request: str): pass
+    def handle(self, request: str) -> str: pass
 
 
 class BaseHandler(Handler):
     def __init__(self):
         self._nextHandler = None
 
-    def setNext(self, handler: Handler):
+    def setNext(self, handler: Handler) -> Handler:
         self._nextHandler = handler
         return handler
 
-    def handle(self, request: str):
+    @abstractmethod
+    def handle(self, request: str) -> str:
         if self._nextHandler:
             return self._nextHandler.handle(request)
         else:
             return f'Nobody can do {request}'
 
 
+# Concrete handlers
 class FrontEndDeveloper(BaseHandler):
-    def handle(self, request: str):
+    def handle(self, request: str) -> str:
         if request == 'front':
             return f'{self.__class__.__name__}: I can do {request}'
         else:
@@ -33,7 +36,7 @@ class FrontEndDeveloper(BaseHandler):
 
 
 class BackEndDeveloper(BaseHandler):
-    def handle(self, request: str):
+    def handle(self, request: str) -> str:
         if request == 'back':
             return f'{self.__class__.__name__}: I can do {request}'
         else:
@@ -41,13 +44,14 @@ class BackEndDeveloper(BaseHandler):
 
 
 class HR(BaseHandler):
-    def handle(self, request: str):
+    def handle(self, request: str) -> str:
         if request == 'people':
             return f'{self.__class__.__name__}: I can do {request}'
         else:
             return super().handle(request)
 
 
+# Client code
 if __name__ == '__main__':
     def client_code(request):
         front_dev, back_dev, hr = FrontEndDeveloper(), BackEndDeveloper(), HR()

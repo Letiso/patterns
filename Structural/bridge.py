@@ -1,8 +1,7 @@
-from abc import ABC, abstractmethod
 
 
 # Realisation interface
-class Device(ABC):
+class Device:
     def __init__(self):
         self._isEnabled = None
         self._volume = self._prevVolume = self._channel = self._channelsAmount = 0

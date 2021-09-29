@@ -21,15 +21,15 @@ def client_code(string: UsualString) -> None:
 
 
 if __name__ == "__main__":
-    print("Client: I can work just fine with the Target objects:")
+    print("Client: I can work just fine with the UsualString objects:")
     usual_string = UsualString()
     client_code(usual_string)
-    print("\n")
+    print("")
 
     bites_string = BytesString()
-    print(f"Client: The BinaryString class can't be represented as a {usual_string.__class__.__name__}.\n"
+    print(f"Client: The BytesString class can't be represented as a {usual_string.__class__.__name__}.\n"
           "See, I don't understand it:")
-    print(f"BinaryString: {bites_string.specific_request()}", end="\n\n")
+    print(f"BytesString: {bites_string.specific_request()}", end="\n\n")
 
     print("Client: But I can work using the Adapter:")
     adapter = Adapter()

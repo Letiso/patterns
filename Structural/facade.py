@@ -6,7 +6,7 @@ class TextSubsystem:
         self._initMessage = 'Text system'
 
     def init(self) -> str:
-        return f"{self._initMessage} is ready"
+        return f"{self._initMessage} is ready\n"
 
     def generateText(self) -> str:
         return f"{self._initMessage}: generated text"
@@ -18,7 +18,7 @@ class NumbersSubsystem:
         self._numbersRange = 15
 
     def init(self) -> str:
-        return f"{self._initNumbers} is ready"
+        return f"{self._initNumbers} is ready\n"
 
     def generateNumbers(self) -> list:
         return [randrange(self._numbersRange) for counter in range(self._numbersRange)]

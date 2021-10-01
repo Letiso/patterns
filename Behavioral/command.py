@@ -1,10 +1,12 @@
 from abc import ABC, abstractmethod
+from copy import deepcopy
 
 
 # Receiver class
 class Editor:
     def __init__(self):
-        self._text = self.selection = None
+        self._text = None
+        self.selection = 0
 
     @property
     def text(self):
@@ -26,19 +28,24 @@ class Editor:
 
 # Abstract commands class
 class Command(ABC):
-    def __init__(self, application):
+    def __init__(self, application, editor):
         self._application = application
+        self._editor = editor
         self._backup = None
 
     @property
-    def application(self):
+    def app(self):
         return self._application
 
+    @property
+    def editor(self):
+        return self._editor
+
     def saveBackup(self):
-        self._backup = self.application.editor.text
+        self._backup = deepcopy(self.editor.text)
 
     def undo(self):
-        self.application.editor.text = self._backup
+        self.editor.text = self._backup
 
     @abstractmethod
     def execute(self): pass
@@ -59,29 +66,37 @@ class CommandHistory:
 # Concrete commands
 class SelectCommand(Command):
     def execute(self):
-        self.application.editor.selection = int(input('Input wishing string to select:\n'))
-        print()
+        self.app.showText()
+        self.editor.selection = int(input('Input wishing string to select:\n'))
 
 
 class CopyCommand(Command):
     def execute(self):
-        return False
+        self.app.clipboard = self.editor.getSelected()
+        print(f'{self.app.clipboard} was copied')
 
 
 class PasteCommand(Command):
     def execute(self):
+        self.saveBackup()
+        self.editor.replaceSelected(self.app.clipboard)
+        print(f'{self.app.clipboard} was pasted')
         return True
 
 
 class CutCommand(Command):
     def execute(self):
+        self.saveBackup()
+        self.app.clipboard = self.editor.getSelected()
+        self.editor.deleteSelected()
+        print(f'{self.app.clipboard} was cut')
         return True
 
 
 class UndoCommand(Command):
     def execute(self):
         self.app.undo()
-        return
+        print('Making undo...')
 
 
 # Sender class
@@ -89,24 +104,37 @@ class App:
     def __init__(self):
         self._editor = Editor()
         self._history = CommandHistory()
-        self._clipboard = None
-        self.createUI()
-
-    @property
-    def editor(self):
-        return self._editor
+        self.clipboard = None
+        self._buttons = [('SelectButton', SelectCommand(self, self._editor)),
+                         ('CopyButton', CopyCommand(self, self._editor)),
+                         ('CutButton', CutCommand(self, self._editor)),
+                         ('PasteButton', PasteCommand(self, self._editor)),
+                         ('UndoButton', UndoCommand(self, self._editor)), ]
 
     @property
     def history(self):
         return self._history
 
-    def createUI(self):
-        pass
+    @property
+    def editor(self):
+        return self._editor
 
-    def showUI(self):
-        print('Current text:\n')
+    def showText(self):
+        print(f'{"—" * 50}\nCurrent text:\n')
         for index, string in enumerate(self.editor.text):
             print(f'\t{index}: {string}')
+        print("—" * 50)
+
+    def showButtons(self):
+        self.showText()
+        print(f'Available actions:\n{"_" * 100}')
+        for index, button in enumerate(self._buttons):
+            print(f'\t|{index}: {button[0]}|', end='\t')
+        print(f'\n{"_" * 100}')
+
+        button = int(input('\nSelect wishing button to press:\n'))
+        self.executeCommand(self._buttons[button][-1])
+        input()
 
     def executeCommand(self, command: Command):
         if command.execute():
@@ -125,12 +153,12 @@ if __name__ == '__main__':
                  'Fourth string',
                  'Fifth string', ]
 
-    def clientCode(app: App):
+
+    def clientCode(app: App, ):
         app.editor.text = user_text
-        app.createUI()
-        select = SelectCommand(app)
-        select.execute()
-        print(app.editor.getSelected())
+
+        while True:
+            app.showButtons()
 
 
     clientCode(App())

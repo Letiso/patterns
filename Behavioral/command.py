@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from copy import deepcopy
+from copy import copy, deepcopy
 
 
 # Receiver class
@@ -57,17 +57,21 @@ class CommandHistory:
         self._stack = []
 
     def push(self, command: Command):
-        self._stack.append(command)
+        self._stack.append(copy(command))
 
     def pop(self):
-        return self._stack.pop()
+        res = self._stack.pop() if self._stack else None
+        return res
 
 
 # Concrete commands
 class SelectCommand(Command):
     def execute(self):
         self.app.showText()
-        self.editor.selection = int(input('Input wishing string to select:\n'))
+        self.editor.selection = int(selection
+                                    if (selection := input('Input wishing string to select:\n')).isdigit() and selection
+                                    else 0)
+        print(f"{self.editor.text[self.editor.selection]} was selected")
 
 
 class CopyCommand(Command):
@@ -80,7 +84,7 @@ class PasteCommand(Command):
     def execute(self):
         self.saveBackup()
         self.editor.replaceSelected(self.app.clipboard)
-        print(f'{self.app.clipboard} was pasted')
+        print(f'"{self.app.clipboard}" was pasted to "{self.editor.selection} string"')
         return True
 
 
@@ -89,14 +93,14 @@ class CutCommand(Command):
         self.saveBackup()
         self.app.clipboard = self.editor.getSelected()
         self.editor.deleteSelected()
-        print(f'{self.app.clipboard} was cut')
+        print(f'"{self.app.clipboard}" was cut from "{self.editor.selection} string"')
         return True
 
 
 class UndoCommand(Command):
     def execute(self):
-        self.app.undo()
         print('Making undo...')
+        self.app.undo()
 
 
 # Sender class
@@ -105,11 +109,11 @@ class App:
         self._editor = Editor()
         self._history = CommandHistory()
         self.clipboard = None
-        self._buttons = [('SelectButton', SelectCommand(self, self._editor)),
-                         ('CopyButton', CopyCommand(self, self._editor)),
-                         ('CutButton', CutCommand(self, self._editor)),
-                         ('PasteButton', PasteCommand(self, self._editor)),
-                         ('UndoButton', UndoCommand(self, self._editor)), ]
+        self._buttons = [('SelectButton', SelectCommand(self, self.editor)),
+                         ('CopyButton', CopyCommand(self, self.editor)),
+                         ('CutButton', CutCommand(self, self.editor)),
+                         ('PasteButton', PasteCommand(self, self.editor)),
+                         ('UndoButton', UndoCommand(self, self.editor)), ]
 
     @property
     def history(self):
@@ -132,7 +136,9 @@ class App:
             print(f'\t|{index}: {button[0]}|', end='\t')
         print(f'\n{"_" * 100}')
 
-        button = int(input('\nSelect wishing button to press:\n'))
+        button = int(selection
+                     if (selection := input('Input wishing button to press:\n')).isdigit() and selection
+                     else 0)
         self.executeCommand(self._buttons[button][-1])
         input()
 
@@ -142,6 +148,8 @@ class App:
 
     def undo(self):
         if command := self.history.pop():
+            print(f'Current text:\n {self.editor.text}')
+            print(f'Backup text:\n {command._backup}')
             command.undo()
 
 

@@ -21,28 +21,29 @@ class WordsCollection(Iterable):
     def __init__(self, collection: list) -> None:
         self._collection = collection
 
-    def __iter__(self) -> AlphabeticalOrderIterator:
-        return AlphabeticalOrderIterator(self._collection)
-
     @property
     def collection(self) -> list:
         return self._collection
 
-    def reversedIter(self) -> AlphabeticalOrderIterator:
+    def __iter__(self) -> AlphabeticalOrderIterator:
+        return AlphabeticalOrderIterator(self._collection)
+
+    def reversed_iter(self) -> AlphabeticalOrderIterator:
         return AlphabeticalOrderIterator(self._collection, True)
 
 
 if __name__ == '__main__':
     wordsCollection = WordsCollection(['First word', 'Second word', 'Third word', 'Fourth word', 'Fifth word'])
+
     def underline(count: int): return print('_' * count)
 
-    def clientCode(words: WordsCollection) -> None:
+    def client_code(words: WordsCollection) -> None:
         underline(30)
         print("Alphabetical order:\n\n" + "\n".join(words))
         underline(30)
 
-        print("Reversed alphabetical order:\n\n" + "\n".join(words.reversedIter()))
+        print("Reversed alphabetical order:\n\n" + "\n".join(words.reversed_iter()))
         underline(30)
 
-    clientCode(wordsCollection)
+    client_code(wordsCollection)
 

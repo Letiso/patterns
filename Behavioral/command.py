@@ -5,8 +5,8 @@ from copy import copy, deepcopy
 # Receiver class
 class Editor:
     def __init__(self):
-        self._text = None
-        self.selection = 0
+        self._text: list = []
+        self.selection: int = 0
 
     @property
     def text(self):
@@ -16,7 +16,7 @@ class Editor:
     def text(self, text: list):
         self._text = text
 
-    def getSelected(self):
+    def getSelected(self) -> str:
         return self._text[self.selection]
 
     def deleteSelected(self):
@@ -30,15 +30,15 @@ class Editor:
 class Command(ABC):
     def __init__(self, application, editor):
         self._application = application
-        self._editor = editor
-        self._backup = None
+        self._editor: Editor = editor
+        self._backup: list = []
 
     @property
     def app(self):
         return self._application
 
     @property
-    def editor(self):
+    def editor(self) -> Editor:
         return self._editor
 
     def saveBackup(self):
@@ -60,8 +60,7 @@ class CommandHistory:
         self._stack.append(copy(command))
 
     def pop(self):
-        res = self._stack.pop() if self._stack else None
-        return res
+        return self._stack.pop() if self._stack else None
 
 
 # Concrete commands
@@ -80,20 +79,20 @@ class CopyCommand(Command):
         print(f'{self.app.clipboard} was copied')
 
 
-class PasteCommand(Command):
-    def execute(self):
-        self.saveBackup()
-        self.editor.replaceSelected(self.app.clipboard)
-        print(f'"{self.app.clipboard}" was pasted to "{self.editor.selection} string"')
-        return True
-
-
 class CutCommand(Command):
     def execute(self):
         self.saveBackup()
         self.app.clipboard = self.editor.getSelected()
         self.editor.deleteSelected()
         print(f'"{self.app.clipboard}" was cut from "{self.editor.selection} string"')
+        return True
+
+
+class PasteCommand(Command):
+    def execute(self):
+        self.saveBackup()
+        self.editor.replaceSelected(self.app.clipboard)
+        print(f'"{self.app.clipboard}" was pasted to "{self.editor.selection} string"')
         return True
 
 
@@ -106,21 +105,21 @@ class UndoCommand(Command):
 # Sender class
 class App:
     def __init__(self):
-        self._editor = Editor()
-        self._history = CommandHistory()
-        self.clipboard = None
-        self._buttons = [('SelectButton', SelectCommand(self, self.editor)),
-                         ('CopyButton', CopyCommand(self, self.editor)),
-                         ('CutButton', CutCommand(self, self.editor)),
-                         ('PasteButton', PasteCommand(self, self.editor)),
-                         ('UndoButton', UndoCommand(self, self.editor)), ]
+        self._editor: Editor = Editor()
+        self._history: CommandHistory = CommandHistory()
+        self.clipboard: str = ''
+        self._buttons: list = [('SelectButton', SelectCommand(self, self.editor)),
+                               ('CopyButton', CopyCommand(self, self.editor)),
+                               ('CutButton', CutCommand(self, self.editor)),
+                               ('PasteButton', PasteCommand(self, self.editor)),
+                               ('UndoButton', UndoCommand(self, self.editor)), ]
 
     @property
-    def history(self):
+    def history(self) -> CommandHistory:
         return self._history
 
     @property
-    def editor(self):
+    def editor(self) -> Editor:
         return self._editor
 
     def showText(self):
@@ -162,7 +161,7 @@ if __name__ == '__main__':
                  'Fifth string', ]
 
 
-    def clientCode(app: App, ):
+    def clientCode(app: App):
         app.editor.text = user_text
 
         while True:

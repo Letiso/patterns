@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from random import sample, randrange
 
 
-# Publisher abstract class
+# Publishers interface
 class Publisher(ABC):
     @abstractmethod
     def subscribe(self, subscriber: 'Subscriber', product_type: str) -> None: pass
@@ -49,8 +49,9 @@ class Shop(Publisher):
         for productType in products:
             self._products[productType].update(products[productType])
             notifying = {'publisher': self.__class__.__name__,
+                         'subscriber': None,
                          'message': 'Was appeared a products from your wishlist in our assortment',
-                         'product_type': productType}
+                         'productType': productType}
 
             self.notify(notifying)
 
@@ -61,7 +62,8 @@ class Shop(Publisher):
         del (products := self._subscribers[product_type])[products.index(subscriber)]
 
     def notify(self, notifying: dict) -> None:
-        for subscriber in self._subscribers[notifying['product_type']]:
+        for subscriber in self._subscribers[notifying['productType']]:
+            notifying['message'] = f'Greetings, {subscriber.name}!\n' + notifying["message"].split("\n")[-1]
             subscriber.update(notifying)
 
 
@@ -73,28 +75,49 @@ class Subscriber(ABC):
 
 # Concrete subscribers
 class Customer(Subscriber):
-    def __init__(self, wishlist: list):
+    def __init__(self, name: str, wishlist: list) -> None:
+        self._name: str = name
         self._wishlist: list = wishlist
+
+    @property
+    def name(self) -> str:
+        return self._name
 
     @property
     def wishlist(self) -> list:
         return self._wishlist
 
     def update(self, notifying: dict) -> None:
-        print(f'Taking massage from {notifying["publisher"]}\n'
+        print(f'\nTaking massage from {notifying["publisher"]}\n'
               f'Message:\n{notifying["message"]}:\n'
               f'{notifying["productType"]}')
 
 
 # Client code
 if __name__ == '__main__':
+    def get_random_name() -> str:
+        first_names = ['Christopher', 'Roger', 'Peter', 'Emily', 'Diana', 'Helen']
+        last_names = ['Wade', 'Page', 'Neal', 'Ray', 'Mitchell', 'Hill', 'Watson']
+
+        return f'{first_names[randrange(len(first_names))]} {last_names[randrange(len(last_names))]}'
+
+
     def client_code() -> None:
         shop = Shop()
-        customers = [Customer(sample(sorted(shop.products), randrange(1, 4))) for customer in range(5)]
+        customers = [Customer(get_random_name(), sample(sorted(shop.products), randrange(1, 4)))
+                     for customer in range(3)]
 
         for customer in customers:
-            print(customer.wishlist)
+            print(f'{customer.name} - {customer.wishlist}')
             for productType in customer.wishlist:
                 shop.subscribe(customer, productType)
+
+        shop.update_assortment({
+            'phones': {
+                'Samsung': True},
+            'tv': {
+                'Ozone': True}
+        })
+
 
     client_code()

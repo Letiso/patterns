@@ -45,21 +45,21 @@ class BaseComponent:
 # Concrete components
 class FirstComponent(BaseComponent):
     def do_a(self) -> None:
-        print('FirstComponent do A')
+        print('FirstComponent does A')
         self.mediator.notify(self, 'A')
 
     def do_b(self) -> None:
-        print('FirstComponent do B')
+        print('FirstComponent does B')
         self.mediator.notify(self, 'B')
 
 
 class SecondComponent(BaseComponent):
     def do_c(self) -> None:
-        print('SecondComponent do C')
+        print('SecondComponent does C')
         self.mediator.notify(self, 'C')
 
     def do_d(self) -> None:
-        print('SecondComponent do D')
+        print('SecondComponent does D')
         self.mediator.notify(self, 'D')
 
 

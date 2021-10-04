@@ -104,8 +104,10 @@ if __name__ == '__main__':
 
     def client_code() -> None:
         shop = Shop()
-        customers = [Customer(get_random_name(), sample(sorted(shop.products), randrange(1, 4)))
-                     for customer in range(3)]
+        customers = [Customer(
+            get_random_name(),
+            sample(sorted(shop.products), randrange(1, 4))
+        ) for customer in range(3)]
 
         for customer in customers:
             print(f'{customer.name} - {customer.wishlist}')

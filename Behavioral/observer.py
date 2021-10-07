@@ -106,7 +106,7 @@ if __name__ == '__main__':
         shop = Shop()
         customers = [Customer(
             get_random_name(),
-            sample(sorted(shop.products), randrange(1, 4))
+            sample(sorted(shop.products), randrange(4))
         ) for customer in range(3)]
 
         for customer in customers:

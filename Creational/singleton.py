@@ -6,6 +6,7 @@ def singleton(cls):
 
     def wrapper():
         return instance
+
     return wrapper
 
 
@@ -28,12 +29,12 @@ class UsersDataBase:
             """, user)
         self.conn.commit()
 
-    def getUser(self, user_id: int):
-        self.cursor.execute("SELECT * FROM users WHERE user_id = ?;", (user_id, ))
+    def get_user(self, user_id: int):
+        self.cursor.execute("SELECT * FROM users WHERE user_id = ?;", (user_id,))
         print('\nRequested user:', end=f"\n{'_' * 50}\n")
         user_id, first_name, last_name = self.cursor.fetchone()
         print(f'User id: {user_id}\n'
-                f'Full name: {first_name} {last_name}', end=f"\n{'_' * 50}\n")
+              f'Full name: {first_name} {last_name}', end=f"\n{'_' * 50}\n")
 
     def get_all_users(self):
         self.cursor.execute("SELECT * FROM users;")
@@ -60,4 +61,4 @@ if __name__ == '__main__':
     for user_data in sorted(users_dict.values()):
         db_port_1.add_user(user_data)
     db_port_2.get_all_users()
-    db_port_1.getUser(randrange(len(users_dict)))
+    db_port_1.get_user(randrange(len(users_dict)))

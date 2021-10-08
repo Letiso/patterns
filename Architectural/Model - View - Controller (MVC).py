@@ -2,19 +2,38 @@ from typing import List, Dict, Union
 from copy import deepcopy
 
 
+# Exceptions
+class Error(Exception):
+    _error = None
+
+    def __init__(self, name: str, err_type: str = None) -> None:
+        self._name: str = name
+        self._err_type: str = err_type
+
+    def __str__(self) -> str:
+        return self._error
+
+
+class NotExistsError(Error):
+    def __init__(self, name, err_type: str = None) -> None:
+        super().__init__(name, err_type)
+        self._error: str = f"Can't {self._err_type} because of product '{self._name}' does not exists"
+
+
+class AlreadyExistsError(Error):
+    def __init__(self, name, err_type: str = None) -> None:
+        super().__init__(name, err_type)
+        self._error: str = f"Can't {self._err_type} because of product '{self._name}' already exists"
+
+
+# Model
 class Model:
-    def __init__(self, products: List[Dict[str, Union[str, int, float]]]):
+    def __init__(self, products: List[Dict[str, Union[str, int, float]]]) -> None:
         self._products: List[Dict[str, Union[str, int, float]]] = products
-        self._errors: Dict[str: str] = {
-            'exists': 'product already exists',
-            'not_exists': "product doesn't exists",
-        }
 
-    def set_products(self, products: List[Dict[str, Union[str, int, float]]]):
-        self._products = products
-
-    def add_product(self, name: str, price: int, quantity: int):
-        if self.read_product(name): return f'"{name.title()}" ' + self._errors['exists']
+    def add_product(self, name: str, price: int, quantity: int) -> None:
+        try:  self.read_product(name)
+        except AlreadyExistsError: raise AlreadyExistsError(name, err_type='add')
 
         self._products.append({
             'name': name,
@@ -22,18 +41,18 @@ class Model:
             'quantity': quantity
         })
 
-    def read_product(self, name: str):
+    def read_product(self, name: str) -> Dict[str, Union[str, int, float]]:
         if not (result := [product for product in self._products
-                           if product['name'] == name]):
-            return f'"{name.title()}" ' + self._errors['not_exists']
+                           if product['name'] == name]): raise NotExistsError(name, err_type='read')
 
         return deepcopy(result[0])
 
-    def read_products(self):
+    def read_products(self) -> List[Dict[str, Union[str, int, float]]]:
         return deepcopy(self._products)
 
-    def update_product(self, name: str, price: int, quantity: int) -> Union[str, None]:
-        if (result := self.read_product(name)) is str: return result
+    def update_product(self, name: str, price: int, quantity: int) -> None:
+        try:  result = self.read_product(name)
+        except NotExistsError: raise NotExistsError(name, err_type='update')
 
         self._products[self._products.index(result)].update({
             'name': name,
@@ -41,21 +60,31 @@ class Model:
             'quantity': quantity
         })
 
-    def delete_product(self, name: str) -> Union[str, None]:
-        if (result := self.read_product(name)) is str: return result
+    def delete_product(self, name: str) -> None:
+        try:  result = self.read_product(name)
+        except NotExistsError: raise NotExistsError(name, err_type='delete')
 
         del self._products[self._products.index(result)]
 
 
+# Controller
+
+
+# View
 class View:
     pass
 
 
+# Client code
 if __name__ == '__main__':
     def client_code(data_base: Model): pass
 
+
     db = Model([
-            {'name': 'bread', 'price': 0.5, 'quantity': 20},
-            {'name': 'milk', 'price': 1.0, 'quantity': 10},
-            {'name': 'wine', 'price': 10.0, 'quantity': 5},
-        ])
+        {'name': 'bread', 'price': 0.5, 'quantity': 20},
+        {'name': 'milk', 'price': 1.0, 'quantity': 10},
+        {'name': 'wine', 'price': 10.0, 'quantity': 5},
+    ])
+
+    db.read_product('meat')
+    db.delete_product('meat')

@@ -1,5 +1,42 @@
+from abc import ABC, abstractmethod
+
+
 # UI
-class View:
+class AbstractView(ABC):
+    @staticmethod
+    @abstractmethod
+    def show_items_list(item_type, items) -> None: pass
+
+    @staticmethod
+    @abstractmethod
+    def show_item(item_type, item, item_info) -> None: pass
+
+    @staticmethod
+    @abstractmethod
+    def display_missing_item_error(item, err) -> None: pass
+
+    @staticmethod
+    @abstractmethod
+    def display_item_already_stored_error(item, item_type, err) -> None: pass
+
+    @staticmethod
+    @abstractmethod
+    def display_item_not_yet_stored_error(item, item_type, err) -> None: pass
+
+    @staticmethod
+    @abstractmethod
+    def display_item_stored(item, item_type) -> None: pass
+
+    @staticmethod
+    @abstractmethod
+    def display_item_updated(item, o_price, o_quantity, n_price, n_quantity) -> None: pass
+
+    @staticmethod
+    @abstractmethod
+    def display_item_deletion(name) -> None: pass
+
+
+class View(AbstractView):
     @staticmethod
     def show_items_list(item_type, items) -> None:
         print(f'\n--- {item_type.upper()} LIST ---')

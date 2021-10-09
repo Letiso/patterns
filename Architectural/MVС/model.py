@@ -1,25 +1,25 @@
 from typing import List, Dict, Union
-from copy import deepcopy
-from abc import ABC, abstractmethod
 from errors import *
 
 
-# Observer abstract class
-class Publisher(ABC):
+# Observer
+class Publisher:
+    _subscribers = None
 
     @staticmethod
     def make_notifying(method_name: str, *args: any) -> Dict[str, any]:
-        return {'method': method_name,
+        return {'method_name': method_name,
                 'args': args}
 
-    @abstractmethod
-    def subscribe(self, subscriber) -> None: pass
+    def subscribe(self, subscriber) -> None:
+        self._subscribers.append(subscriber)
 
-    @abstractmethod
-    def unsubscribe(self, subscriber) -> None: pass
+    def unsubscribe(self, subscriber) -> None:
+        del (items := self._subscribers)[items.index(subscriber)]
 
-    @abstractmethod
-    def notify(self, notifying: dict) -> None: pass
+    def notify(self, notifying: dict) -> None:
+        for subscriber in self._subscribers:
+            subscriber.update(notifying)
 
 
 # Business-logic
@@ -33,34 +33,34 @@ class Model(Publisher):
     def item_type(self) -> str:
         return self._item_type
 
-    def add_item(self, name: str, price: int, quantity: int) -> None:
+    def add_item(self, item_name: str, price: Union[int, float], quantity: Union[int, float]) -> None:
         try:
-            self.read_item(name)
-            raise AlreadyExistsError(name, err_type='add')
+            self.read_item(item_name)
+            raise AlreadyExistsError(item_name, err_type='add')
         except NotExistsError:
             self._items.append({
-                'name': name,
+                'name': item_name,
                 'price': price,
                 'quantity': quantity
             })
-            notifying = self.make_notifying('display_item_stored', name, self._item_type)
+            notifying = self.make_notifying('display_item_stored', item_name, self._item_type)
             self.notify(notifying)
 
     def read_items(self) -> None:
         notifying = self.make_notifying('display_items_list', self._item_type, self._items)
         self.notify(notifying)
 
-    def read_item(self, name: str, direct_call: bool = False) -> dict:
+    def read_item(self, item_name: str, direct_call: bool = False) -> dict:
         if not (itemsList := [product for product in self._items
-                              if product['name'] == name]): raise NotExistsError(name, err_type='read')
+                              if product['name'] == item_name]): raise NotExistsError(item_name, err_type='read')
 
         if direct_call:
-            notifying = self.make_notifying('display_item', self._item_type, name, itemsList[0])
+            notifying = self.make_notifying('display_item', self._item_type, item_name, itemsList[0])
             self.notify(notifying)
 
         return itemsList[0]
 
-    def update_item(self, item_name: str, price: int, quantity: int) -> None:
+    def update_item(self, item_name: str, price: Union[int, float], quantity: Union[int, float]) -> None:
         try:
             item = self.read_item(item_name)
             self._items[self._items.index(item)].update({
@@ -78,14 +78,3 @@ class Model(Publisher):
             raise NotExistsError(name, err_type='delete')
 
         del self._items[self._items.index(result)]
-
-    # Publisher part
-    def subscribe(self, subscriber) -> None:
-        self._subscribers.append(subscriber)
-
-    def unsubscribe(self, subscriber) -> None:
-        del (items := self._subscribers)[items.index(subscriber)]
-
-    def notify(self, notifying: dict) -> None:
-        for subscriber in self._subscribers:
-            subscriber.update(notifying)

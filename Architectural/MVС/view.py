@@ -1,19 +1,21 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 
 
-# Subscriber abstract class
-class Subscriber(ABC):
-    @abstractmethod
-    def update(self, notifying: dict) -> None: pass
+# Observer
+class Subscriber:
+    _methods = None
+
+    def update(self, notifying: dict) -> None:
+        self._methods[notifying['method_name']](*notifying['args'])
 
 
 # UI
 class View(Subscriber):
     def __init__(self, controller):
         self._controller = controller
-        self._methods: dict = {name: method
-                               for name, method in self.__class__.__dict__.items()
-                               if 'item' in name}
+        self._methods: dict = {method_name: method
+                               for method_name, method in self.__class__.__dict__.items()
+                               if 'item' in method_name}
 
     # Requests part
     def show_items_list(self) -> None:
@@ -22,10 +24,10 @@ class View(Subscriber):
     def show_item(self, item_name) -> None:
         self._controller.show_item(item_name)
 
-    def add_item(self, name, price, quantity) -> None:
+    def add_item(self, name: str, price, quantity) -> None:
         self._controller.add_item(name, price, quantity)
 
-    def update_item(self, name, price, quantity) -> None:
+    def update_item(self, name: str, price, quantity) -> None:
         self._controller.update_item(name, price, quantity)
 
     def delete_item(self, name) -> None:
@@ -84,7 +86,3 @@ class View(Subscriber):
         print('\n--------------------------------------------------------------')
         print(f'We have just removed {name} from our list')
         print('--------------------------------------------------------------')
-
-    # Subscriber part
-    def update(self, notifying: dict) -> None:
-        self._methods[notifying['method']](*notifying['args'])

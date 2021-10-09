@@ -1,13 +1,45 @@
+from abc import ABC, abstractmethod
+
+
+# Subscriber abstract class
+class Subscriber(ABC):
+    @abstractmethod
+    def update(self, notifying: dict) -> None: pass
+
+
 # UI
-class View:
+class View(Subscriber):
+    def __init__(self, controller):
+        self._controller = controller
+        self._methods: dict = {name: method
+                               for name, method in self.__class__.__dict__.items()
+                               if 'item' in name}
+
+    # Requests part
+    def show_items_list(self) -> None:
+        self._controller.show_items_list()
+
+    def show_item(self, item_name) -> None:
+        self._controller.show_item(item_name)
+
+    def add_item(self, name, price, quantity) -> None:
+        self._controller.add_item(name, price, quantity)
+
+    def update_item(self, name, price, quantity) -> None:
+        self._controller.update_item(name, price, quantity)
+
+    def delete_item(self, name) -> None:
+        self._controller.delete_item(name)
+
+    # Display part
     @staticmethod
-    def show_items_list(item_type, items) -> None:
+    def display_items_list(item_type, items) -> None:
         print(f'\n--- {item_type.upper()} LIST ---')
         for i, item in enumerate(items):
             print(f'{i + 1}. {item}')
 
     @staticmethod
-    def show_item(item_type, item, item_info) -> None:
+    def display_item(item_type, item, item_info) -> None:
         print('\n//////////////////////////////////////////////////////////////')
         print(f'Good news, we have some {item.upper()}!')
         print(f'{item_type.upper()} INFO: {item_info}')
@@ -30,7 +62,7 @@ class View:
     @staticmethod
     def display_item_not_yet_stored_error(item, item_type, err) -> None:
         print('\n**************************************************************')
-        print(f"We don't have any {item.upper()} in our {item_type} list. Please insert it first!")
+        print(f"We don't have any {item.upper()} in our {item_type} list. Please add it first!")
         print(f'{err}')
         print('**************************************************************')
 
@@ -52,3 +84,7 @@ class View:
         print('\n--------------------------------------------------------------')
         print(f'We have just removed {name} from our list')
         print('--------------------------------------------------------------')
+
+    # Subscriber part
+    def update(self, notifying: dict) -> None:
+        self._methods[notifying['method']](*notifying['args'])

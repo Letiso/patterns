@@ -46,4 +46,3 @@ if __name__ == '__main__':
         underline(30)
 
     client_code(wordsCollection)
-
